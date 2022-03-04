@@ -31,7 +31,7 @@ import uk.gov.gchq.gaffer.store.operation.handler.OperationHandler;
 import java.util.Comparator;
 import java.util.List;
 
-import static java.util.Objects.*;
+import static java.util.Objects.isNull;
 import static uk.gov.gchq.gaffer.operation.impl.compare.ElementComparisonUtil.fieldComparators;
 import static uk.gov.gchq.gaffer.operation.impl.compare.ElementComparisonUtil.getCombinedComparator;
 import static uk.gov.gchq.gaffer.operation.impl.compare.ElementComparisonUtil.getComparators;
