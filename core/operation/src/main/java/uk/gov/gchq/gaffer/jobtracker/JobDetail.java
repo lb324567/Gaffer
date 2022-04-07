@@ -66,11 +66,11 @@ public class JobDetail implements Serializable {
         }
     }
 
-    public JobDetail(final String jobId, final User user, final OperationChain<?> opChain, final JobStatus jobStatus, final String description) {
+    public JobDetail(final String jobId, final User user, final Operation opChain, final JobStatus jobStatus, final String description) {
         this(jobId, null, user, opChain, jobStatus, description);
     }
 
-    public JobDetail(final String jobId, final String parentJobId, final User user, final OperationChain<?> opChain, final JobStatus jobStatus, final String description) {
+    public JobDetail(final String jobId, final String parentJobId, final User user, final Operation opChain, final JobStatus jobStatus, final String description) {
         this.jobId = jobId;
         this.parentJobId = parentJobId;
         this.user = user;

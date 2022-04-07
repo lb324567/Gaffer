@@ -23,12 +23,16 @@ import uk.gov.gchq.gaffer.accumulostore.AccumuloStore;
 import uk.gov.gchq.gaffer.accumulostore.key.AccumuloElementConverter;
 import uk.gov.gchq.gaffer.commonutil.StringUtil;
 import uk.gov.gchq.gaffer.data.element.Element;
+import uk.gov.gchq.gaffer.operation.Operation;
 import uk.gov.gchq.gaffer.store.StoreException;
 import uk.gov.gchq.gaffer.store.operation.handler.AbstractSampleElementsForSplitPointsHandler;
 
 import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
+
 public class SampleElementsForSplitPointsHandler extends AbstractSampleElementsForSplitPointsHandler<String, AccumuloStore> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SampleElementsForSplitPointsHandler.class);
 
     @Override
@@ -36,18 +40,26 @@ public class SampleElementsForSplitPointsHandler extends AbstractSampleElementsF
         final AccumuloElementConverter converter = store.getKeyPackage().getKeyConverter();
         return stream
                 .map(converter::getRowKeysFromElement)
-                .flatMap(p -> null == p.getSecond() ? Stream.of(p.getFirst()) : Stream.of(p.getFirst(), p.getSecond()))
+                .flatMap(p -> isNull(p.getSecond()) ? Stream.of(p.getFirst()) : Stream.of(p.getFirst(), p.getSecond()))
                 .map(Base64::encodeBase64)
                 .map(StringUtil::toString);
     }
 
     @Override
-    protected Integer getNumSplits(final SampleElementsForSplitPoints operation, final AccumuloStore store) {
+    protected Integer getNumSplits(final Operation operation, final AccumuloStore store) {
         Integer numSplits = super.getNumSplits(operation, store);
-        if (null == numSplits) {
+        if (isNull(numSplits)) {
             numSplits = getNumAccumuloSplits(store);
         }
         return numSplits;
+    }
+
+    @Override
+    protected Operation getOperation(final Iterable<String> input, final Integer numSplits) {
+        return new GenerateSplitPointsFromSampleHandler.OperationBuilder()
+                .input(input)
+                .numSplits(numSplits)
+                .build();
     }
 
     private int getNumAccumuloSplits(final AccumuloStore store) {
@@ -61,5 +73,18 @@ public class SampleElementsForSplitPointsHandler extends AbstractSampleElementsF
         }
 
         return numberTabletServers - 1;
+    }
+
+    public static class OperationBuilder extends AbstractOperationBuilder<OperationBuilder, SampleElementsForSplitPointsHandler, Iterable<? extends Element>> {
+
+        @Override
+        protected OperationBuilder getBuilder() {
+            return this;
+        }
+
+        @Override
+        protected SampleElementsForSplitPointsHandler getHandler() {
+            return new SampleElementsForSplitPointsHandler();
+        }
     }
 }

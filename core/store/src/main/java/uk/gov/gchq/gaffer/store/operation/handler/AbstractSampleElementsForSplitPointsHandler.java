@@ -20,9 +20,12 @@ import com.google.common.collect.Iterables;
 import uk.gov.gchq.gaffer.commonutil.iterable.LimitedCloseableIterable;
 import uk.gov.gchq.gaffer.commonutil.stream.Streams;
 import uk.gov.gchq.gaffer.data.element.Element;
+import uk.gov.gchq.gaffer.operation.Operation;
 import uk.gov.gchq.gaffer.operation.OperationException;
 import uk.gov.gchq.gaffer.store.Context;
 import uk.gov.gchq.gaffer.store.Store;
+import uk.gov.gchq.gaffer.store.operation.handler.OperationHandler.AbstractBuilder;
+import uk.gov.gchq.gaffer.store.operation.handler.OperationHandler.BuilderSpecificOperation;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,33 +33,41 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractSampleElementsForSplitPointsHandler<T, S extends Store> implements OperationHandler<SampleElementsForSplitPoints<T>, List<T>> {
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import static uk.gov.gchq.gaffer.store.operation.handler.FieldDeclaration.INPUT;
+
+public abstract class AbstractSampleElementsForSplitPointsHandler<T, S extends Store> implements OperationHandler<List<T>> {
+
     public static final int MAX_SAMPLED_ELEMENTS_DEFAULT = 10000000;
+
+    private static final String NUM_SPLITS = "numSplits";
+
+    private static final String PROPORTION_TO_SAMPLE = "proportionToSample";
 
     private int maxSampledElements = MAX_SAMPLED_ELEMENTS_DEFAULT;
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List<T> doOperation(final SampleElementsForSplitPoints<T> operation, final Context context, final Store store) throws OperationException {
+    public List<T> _doOperation(final Operation operation, final Context context, final Store store) throws OperationException {
         final S typedStore = (S) store;
 
         validate(operation, typedStore);
 
         final Integer numSplits = getNumSplits(operation, typedStore);
-        if (null == numSplits) {
+        if (isNull(numSplits)) {
             throw new OperationException("Number of splits is required");
-        }
-        if (numSplits < 1) {
+        } else if (numSplits < 1) {
             return Collections.emptyList();
         }
 
-        final float proportionToSample = operation.getProportionToSample();
+        final float proportionToSample = Float.class.cast(operation.getOrDefault(PROPORTION_TO_SAMPLE, 1F));
         final Random random = new Random(System.currentTimeMillis());
 
-
         final Iterable<? extends Element> cleanElements = Iterables.filter(
-                operation.input(),
-                e -> null != e && (1 == proportionToSample || random.nextFloat() <= proportionToSample)
-        );
+                (Iterable<? extends Element>) operation.input(),
+                e -> nonNull(e) && (proportionToSample == 1 || proportionToSample >= random.nextFloat()));
 
         final LimitedCloseableIterable<? extends Element> limitedElements =
                 new LimitedCloseableIterable<>(cleanElements, 0, maxSampledElements, false);
@@ -65,12 +76,7 @@ public abstract class AbstractSampleElementsForSplitPointsHandler<T, S extends S
         final Stream<T> sortedRecordStream = sort(recordStream, typedStore);
         final List<T> records = sortedRecordStream.collect(Collectors.toList());
 
-        return store.execute(
-                new GenerateSplitPointsFromSample.Builder<T>()
-                        .input(records)
-                        .numSplits(numSplits)
-                        .build(),
-                context);
+        return store.execute(getOperation(records, numSplits), context);
     }
 
     public int getMaxSampledElements() {
@@ -81,19 +87,48 @@ public abstract class AbstractSampleElementsForSplitPointsHandler<T, S extends S
         this.maxSampledElements = maxSampledElements;
     }
 
+    @Override
+    public FieldDeclaration getFieldDeclaration() {
+        return new FieldDeclaration()
+                .inputRequired(Iterable.class)
+                .fieldOptional(NUM_SPLITS, Integer.class)
+                .fieldOptional(PROPORTION_TO_SAMPLE, Float.class);
+    }
+
     protected abstract Stream<T> process(final Stream<? extends Element> stream, final S store);
 
-    protected void validate(final SampleElementsForSplitPoints operation, final S store) throws OperationException {
+    protected void validate(final Operation operation, final S store) throws OperationException {
         if (null == operation.input()) {
             throw new OperationException("Operation input is required.");
         }
     }
 
-    protected Integer getNumSplits(final SampleElementsForSplitPoints operation, final S store) {
-        return operation.getNumSplits();
+    protected Integer getNumSplits(final Operation operation, final S store) {
+        return Integer.class.cast(operation.getOrDefault(NUM_SPLITS, null));
     }
 
     protected Stream<T> sort(final Stream<T> records, final S store) {
         return records.sorted();
+    }
+
+    protected abstract Operation getOperation(final Iterable<T> input, final Integer numSplits);
+
+    protected static abstract class AbstractOperationBuilder<B extends AbstractBuilder<B>, H extends OperationHandler<?>, I>
+            extends BuilderSpecificOperation<B, H> {
+
+        public B input(final I input) {
+            operationArg(INPUT, input);
+            return getBuilder();
+        }
+
+        public B numSplits(final Integer numSplits) {
+            operationArg(NUM_SPLITS, numSplits);
+            return getBuilder();
+        }
+
+        public B proportionToSample(final Float proportionToSample) {
+            operationArg(PROPORTION_TO_SAMPLE, proportionToSample);
+            return getBuilder();
+        }
     }
 }

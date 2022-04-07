@@ -19,17 +19,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.gov.gchq.gaffer.accumulostore.AccumuloStore;
+import uk.gov.gchq.gaffer.operation.Operation;
 import uk.gov.gchq.gaffer.store.StoreException;
 import uk.gov.gchq.gaffer.store.operation.handler.AbstractGenerateSplitPointsFromSampleHandler;
+
+import static java.util.Objects.isNull;
 
 public class GenerateSplitPointsFromSampleHandler extends AbstractGenerateSplitPointsFromSampleHandler<String, AccumuloStore> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateSplitPointsFromSampleHandler.class);
 
     @Override
-    protected Integer getNumSplits(final GenerateSplitPointsFromSample operation, final AccumuloStore store) {
+    protected Integer getNumSplits(final Operation operation, final AccumuloStore store) {
         Integer numSplits = super.getNumSplits(operation, store);
-        if (null == numSplits) {
+        if (isNull(numSplits)) {
             numSplits = getNumAccumuloSplits(store);
         }
         return numSplits;
@@ -48,4 +51,16 @@ public class GenerateSplitPointsFromSampleHandler extends AbstractGenerateSplitP
         return numberTabletServers - 1;
     }
 
+    public static class OperationBuilder extends AbstractOperationBuilder<OperationBuilder, GenerateSplitPointsFromSampleHandler, Iterable<String>> {
+
+        @Override
+        protected OperationBuilder getBuilder() {
+            return this;
+        }
+
+        @Override
+        protected GenerateSplitPointsFromSampleHandler getHandler() {
+            return new GenerateSplitPointsFromSampleHandler();
+        }
+    }
 }

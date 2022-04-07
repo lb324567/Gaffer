@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.exception.CloneFailedException;
 
+import uk.gov.gchq.gaffer.commonutil.CloseableUtil;
 import uk.gov.gchq.gaffer.jsonserialisation.JSONSerialiser;
 import uk.gov.gchq.gaffer.operation.serialisation.TypeReferenceImpl;
 import uk.gov.gchq.koryphe.Since;
@@ -49,8 +51,6 @@ import static uk.gov.gchq.gaffer.operation.OperationConstants.KEY_INPUT;
 import static uk.gov.gchq.gaffer.operation.OperationConstants.KEY_OUTPUT_TYPE_REFERENCE;
 import static uk.gov.gchq.gaffer.operation.OperationConstants.LOCALE;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
-@JsonPropertyOrder(value = {"class", "id", "operationArgs"}, alphabetic = true)
 /**
  * An {@code Operation} defines an operation to be processed on a graph.
  * All operations must to implement this interface.
@@ -68,7 +68,8 @@ import static uk.gov.gchq.gaffer.operation.OperationConstants.LOCALE;
  * {@link uk.gov.gchq.gaffer.operation.io.Input}
  * {@link uk.gov.gchq.gaffer.operation.io.Output}
  * {@link uk.gov.gchq.gaffer.operation.io.InputOutput} (Use this instead of Input and Output if your operation takes both input and output.)
- * {@link uk.gov.gchq.gaffer.operation.io.MultiInput} (Use this in addition if you operation takes multiple inputs. This will help with json  serialisation)
+ * {@link uk.gov.gchq.gaffer.operation.io.MultiInput} (Use this in addition if you operation takes multiple inputs. This will help with json
+ * serialisation)
  * {@link uk.gov.gchq.gaffer.operation.Validatable}
  * {@link uk.gov.gchq.gaffer.operation.graph.OperationView}
  * {@link uk.gov.gchq.gaffer.operation.graph.GraphFilters}
@@ -98,6 +99,8 @@ import static uk.gov.gchq.gaffer.operation.OperationConstants.LOCALE;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "class")
 @JsonPropertyOrder(value = {"class", "id", "operationArgs"}, alphabetic = true)
+//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
+//@JsonPropertyOrder(value = {"class", "id", "operationArgs"}, alphabetic = true)
 @JsonSimpleClassName(includeSubtypes = true)
 @Since("0.0.1")
 @Summary("An Operation which contains an Id and a mapping of args to be used by handlers associated by the Id.")
@@ -105,8 +108,7 @@ public class Operation implements Closeable {
     private final String id;
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "class")
     @JsonPropertyOrder(value = {"class"}, alphabetic = true)
-    private Map<String, Object> operationArgs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
+    private final Map<String, Object> operationArgs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public Operation(final String id) {
         this.id = lowercase(id);
@@ -144,12 +146,12 @@ public class Operation implements Closeable {
         return this;
     }
 
-    public Operation operationArg(Map.Entry<String, Object> entry) {
+    public Operation operationArg(final Map.Entry<String, Object> entry) {
         return operationArg(entry.getKey(), entry.getValue());
     }
 
     public Object get(final String key) {
-        //TODO FS
+        // TODO FS
         return operationArgs.get(lowercase(requireNonNull(key)));
     }
 
@@ -167,7 +169,7 @@ public class Operation implements Closeable {
     }
 
     public Object getInput() {
-        //TODO FS refactor this out
+        // TODO FS refactor this out
         throw new UnsupportedOperationException("refactor this out");
     }
 
@@ -175,17 +177,20 @@ public class Operation implements Closeable {
         return operationArgs.getOrDefault(key, defaultValue);
     }
 
+    @SuppressWarnings("rawtypes")
     @JsonIgnore
     public TypeReference getOutputTypeReferenceOrNull() {
         return (TypeReference) get(KEY_OUTPUT_TYPE_REFERENCE);
     }
 
+    @SuppressWarnings("rawtypes")
     @JsonIgnore
     public TypeReference getOutputTypeReferenceOrVoid() {
         return (TypeReference) getOrDefault(KEY_OUTPUT_TYPE_REFERENCE, new TypeReferenceImpl.Void());
     }
 
-    public Operation outputTypeReference(TypeReference typeReference) {
+    @SuppressWarnings("rawtypes")
+    public Operation outputTypeReference(final TypeReference typeReference) {
         operationArg(KEY_OUTPUT_TYPE_REFERENCE, typeReference);
         return this;
     }
@@ -213,30 +218,34 @@ public class Operation implements Closeable {
      * @throws CloneFailedException if a Clone error occurs
      */
     public Operation shallowClone() throws CloneFailedException {
+        Operation operation = null;
         try {
-            return new Operation(id)
-                    .operationArgs(operationArgs);
-        } catch (Exception e) {
+            operation = new Operation(id);
+            return operation.operationArgs(operationArgs);
+        } catch (final Exception e) {
             throw new CloneFailedException(e);
+        } finally {
+            CloseableUtil.close(operation);
         }
     }
 
     public Operation deepClone() throws CloneFailedException {
         try {
             return JSONSerialiser.deserialise(JSONSerialiser.serialise(this), Operation.class);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new CloneFailedException(e);
         }
     }
 
-    //TODO review this
+    // TODO review this
+    @Override
     public void close() throws IOException {
-        List<String> collect = operationArgs.values().stream()
+        final List<String> collect = operationArgs.values().stream()
                 .filter(v -> v instanceof Closeable)
                 .map(v -> {
                     try {
                         ((Closeable) v).close();
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         return e;
                     }
                     return null;
@@ -246,7 +255,7 @@ public class Operation implements Closeable {
                 .collect(Collectors.toList());
 
         if (!collect.isEmpty()) {
-            String join = String.join(" : ", collect);
+            final String join = String.join(" : ", collect);
             throw new IOException(join);
         }
     }
@@ -266,7 +275,6 @@ public class Operation implements Closeable {
         final EqualsBuilder equalsBuilder = new EqualsBuilder()
                 .append(id, that.id)
                 .append(operationArgs.size(), that.operationArgs.size());
-
 
         if (equalsBuilder.isEquals()) {
             boolean mapsAreEqual = true;
