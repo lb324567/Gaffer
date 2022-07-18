@@ -61,8 +61,8 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
-    - if: contains(env.BRANCH_NAME, 'test')
-      runs-on: ubuntu-latest
+    if: contains(env.BRANCH_NAME, 'test')
+    runs-on: ubuntu-latest
 
 
     env:
