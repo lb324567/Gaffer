@@ -61,7 +61,6 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
-    run: echo "BRANCH = (echo ${{ env.BRANCH_NAME }}" >> $GITHUB_ENV
     runs-on: ubuntu-latest
 
 
