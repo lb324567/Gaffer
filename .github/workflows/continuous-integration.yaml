@@ -61,10 +61,9 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
-    if: contains(env.BRANCH_NAME, 'test')
     runs-on: ubuntu-latest
-
-
+    if: contains(env.BRANCH_NAME, 'test')
+    
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
     steps:
