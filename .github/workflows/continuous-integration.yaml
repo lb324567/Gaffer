@@ -62,8 +62,8 @@ jobs:
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
     runs-on: ubuntu-latest
-    if: contains(env.BRANCH_NAME, 'test')
-    
+    run: echo "DEVELOP_BRANCH= $ {{echo env.BRANCH_NAME}}" >> $GITHUB_ENV
+
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
     steps:
