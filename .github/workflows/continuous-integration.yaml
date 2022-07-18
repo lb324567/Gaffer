@@ -62,9 +62,11 @@ jobs:
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
 
-      if: ${{ contains(env.BRANCH_NAME, 'windows') || contains(env.BRANCH_NAME, 'release')}}
-      runs-on: ${{ matrix.os }}
-      run: echo "OPERATING_SYSTEM=$(echo ${{ matrix.os }})" >> $GITHUB_ENV
+      - if: ${{ contains(env.BRANCH_NAME, 'windows') || contains(env.BRANCH_NAME, 'release-branch')}}
+        runs-on: ${{ matrix.os }}
+      - if: ${{ !contains(env.BRANCH_NAME, 'windows') }}
+        runs-on: ubuntu-latest
+
 
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
