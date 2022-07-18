@@ -61,16 +61,17 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
-    if: ${{ BRANCH_NAME == 'test1' }}
+#    if: ${{ BRANCH_NAME == 'test1' }}
     runs-on: ${{ matrix.os }}
 #      run: echo "DEVELOP_BRANCH= $ {{echo env.BRANCH_NAME}}" >> $GITHUB_ENV
 
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
-
-
     steps:
+    - name: Reginold
+      run: echo 'The branch name is' $BRANCH_NAME
+      
     - uses: actions/checkout@v2
 
     - name: Setup JDK
