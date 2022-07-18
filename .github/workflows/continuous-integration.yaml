@@ -39,7 +39,6 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
@@ -61,13 +60,9 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
+    runs-on: ubuntu-latest
 
-      - if: ${{ contains(env.BRANCH_NAME, 'windows') || contains(env.BRANCH_NAME, 'release-branch')}}
-        runs-on: ${{ matrix.os }}
-      - if: ${{ !contains(env.BRANCH_NAME, 'windows') }}
-        runs-on: ubuntu-latest
-
-
+    
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
     steps:
