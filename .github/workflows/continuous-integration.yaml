@@ -36,7 +36,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build-windows:
-    if: contains( github.head_ref, 'windows')
+    if: contains( github.head_ref, 'bob')
     runs-on: windows-latest
     name: 'test on windows'
     env:
@@ -73,7 +73,6 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
