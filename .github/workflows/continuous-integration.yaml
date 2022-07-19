@@ -61,18 +61,15 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
+#    if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+#    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
-    if: contains( github.head_ref, 'test') || contains( github.head_ref, 'alpha')
-    runs-on: ${{ matrix.os }}
-
     steps:
     - uses: actions/checkout@v2
-
-    - name: Reggie
-      run: echo ${{ github.head_ref }}
 
     - name: Setup JDK
       uses: actions/setup-java@v2
@@ -89,6 +86,9 @@ jobs:
         key: ${{matrix.modules.name}}-gaffer-dependencies
 
     - name: Install
+      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+      with:
+        os: ${{ matrix.os }}
       run: mvn -B -q clean install -P quick -pl ${{matrix.modules.values}} -am
 
     - name: Test
