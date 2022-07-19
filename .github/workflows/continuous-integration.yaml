@@ -87,8 +87,8 @@ jobs:
 
     - name: Install
       if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-#      with:
-#        os: ${{ matrix.os }}
+      with:
+        os: ${{ matrix.os }}
       run: mvn -B -q clean install -P quick -pl ${{matrix.modules.values}} -am
 
     - name: Test
