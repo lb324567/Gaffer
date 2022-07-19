@@ -65,9 +65,8 @@ jobs:
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
-    if: contains( github.head_ref, 'test')
+    if: contains( github.head_ref, 'test') || contains( github.head_ref, 'alpha')
     runs-on: ${{ matrix.os }}
-
 
     steps:
     - uses: actions/checkout@v2
