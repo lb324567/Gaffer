@@ -41,24 +41,24 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
 
-    outputs:
-      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-      output: ${{ steps.both.outputs.test }}
-
-
-    steps:
-      - id: both
-        if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-        run: echo "::set-output name=test::{{ matrix.os }}"
-      - id: one
-        if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
-        run: echo "::set-output name=test::ubuntu-latest"
+#    outputs:
+#      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+#      output: ${{ steps.both.outputs.test }}
+#
+#
+#    steps:
+#      - id: both
+#        if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+#        run: echo "::set-output name=test::{{ matrix.os }}"
+#      - id: one
+#        if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
+#        run: echo "::set-output name=test::ubuntu-latest"
 
 
 
   build:
     needs: job1
-    runs-on: ${{ needs.job1.outputs.output }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
