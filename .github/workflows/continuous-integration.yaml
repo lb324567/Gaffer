@@ -66,14 +66,15 @@ jobs:
     env:
       MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
-    - name: Set OS
-      - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-        run: echo "OS=${{ matrix.os }}" >> $GITHUB_ENV
-      - if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
-        run: echo "OS=ubuntu-latest" >> $GITHUB_ENV
-
     steps:
     - uses: actions/checkout@v2
+
+  
+    - name: Set OS
+        - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+          run: echo "OS=${{ matrix.os }}" >> $GITHUB_ENV
+        - if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
+          run: echo "OS=ubuntu-latest" >> $GITHUB_ENV
 
     - name: Setup JDK
       uses: actions/setup-java@v2
