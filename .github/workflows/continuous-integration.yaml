@@ -72,6 +72,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Pick OS
+      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+      with:
+        runs-on: ${{ matrix.os }}
+
     - name: Setup JDK
       uses: actions/setup-java@v2
       with:
@@ -90,10 +95,9 @@ jobs:
       run: mvn -B -q clean install -P quick -pl ${{matrix.modules.values}} -am
 
     - name: Test
-      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+
       run: mvn -B -q verify -P coverage -pl ${{matrix.modules.values}}
-      with:
-        runs-on: ${{ matrix.os }}
+
 
     - name: Upload Coverage
       uses: codecov/codecov-action@v2
