@@ -72,9 +72,9 @@ jobs:
       with:
         runs-on: ${{ matrix.os }}
     steps:
-    - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-      with:
-        runs-on: ${{ matrix.os }}
+#    - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+#      with:
+#        runs-on: ${{ matrix.os }}
 #    - if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
 #      with:
 #        runs-on: ubuntu-latest
