@@ -62,15 +62,19 @@ jobs:
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
 
-    if: ${{ contains( 'Hello world', 'llo') }}
-
-    runs-on: ${{ matrix.os }}
-
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
+    if: ${{ contains( 'Hello world', 'llo') }}
+    runs-on: ${{ matrix.os }}
+
+
     steps:
     - uses: actions/checkout@v2
+
+    - name: Reggie
+      run: echo ${{ github.head_ref }}
+
 
     - name: Setup JDK
       uses: actions/setup-java@v2
