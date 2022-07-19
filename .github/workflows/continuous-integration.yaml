@@ -36,6 +36,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
+    runs-on: ${{ env.OS }}
     strategy:
       fail-fast: true
       matrix:
@@ -61,21 +62,15 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
-    # - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-    #      with:
-    #        runs-on: ${{ matrix.os }}
+
+    env:
+      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
     - name: Set OS
       - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
         run: echo "OS=${{ matrix.os }}" >> $GITHUB_ENV
       - if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
         run: echo "OS=ubuntu-latest" >> $GITHUB_ENV
-
-
-    runs-on: ${{ env.OS }}
-
-    env:
-     MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
     steps:
     - uses: actions/checkout@v2
