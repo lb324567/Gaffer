@@ -64,18 +64,13 @@ jobs:
     # - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
     #      with:
     #        runs-on: ${{ matrix.os }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     env:
      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Pick OS
-      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-      with:
-        runs-on: ${{ matrix.os }}
 
     - name: Setup JDK
       uses: actions/setup-java@v2
@@ -92,10 +87,12 @@ jobs:
         key: ${{matrix.modules.name}}-gaffer-dependencies
 
     - name: Install
+      if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
+      with:
+        runs-on: ${{ matrix.os.ubuntu-latest }}
       run: mvn -B -q clean install -P quick -pl ${{matrix.modules.values}} -am
 
     - name: Test
-
       run: mvn -B -q verify -P coverage -pl ${{matrix.modules.values}}
 
 
