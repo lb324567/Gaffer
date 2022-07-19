@@ -61,6 +61,9 @@ jobs:
             values: :library,:time-library
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
+
+    if: ${{ contains( GITHUB_REF , 'test') }}
+
     runs-on: ${{ matrix.os }}
 
     env:
@@ -68,12 +71,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Set branch name
-      run: echo "BRANCH_NAME=$(git branch -a | grep $RELEASE_VERSION | tail -n 1 | cut -c 18-)" >> $GITHUB_ENV
-
-    - name: Reginald
-      run: echo 'The branch name is' env.BRANCH_NAME
 
     - name: Setup JDK
       uses: actions/setup-java@v2
