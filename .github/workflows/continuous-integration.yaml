@@ -91,9 +91,9 @@ jobs:
 
     - name: Test
       if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+      run: mvn -B -q verify -P coverage -pl ${{matrix.modules.values}}
       with:
         runs-on: ${{ matrix.os }}
-      run: mvn -B -q verify -P coverage -pl ${{matrix.modules.values}}
 
     - name: Upload Coverage
       uses: codecov/codecov-action@v2
