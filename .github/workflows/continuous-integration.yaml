@@ -69,6 +69,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Set branch name
+      run: echo "BRANCH_NAME=$(git branch -a | grep $RELEASE_VERSION | tail -n 1 | cut -c 18-)" >> $GITHUB_ENV
+
     - name: Reginald
       run: echo 'The branch name is' env.BRANCH_NAME
 
