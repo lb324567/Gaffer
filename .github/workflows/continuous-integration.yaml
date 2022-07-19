@@ -36,7 +36,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build-windows:
-    if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+    if: contains( github.head_ref, 'windows')
     runs-on: windows-latest
     name: 'test on windows'
     env:
@@ -64,7 +64,6 @@ jobs:
 
       - name: Test
         run: mvn -B -q verify -P coverage -pl ${{matrix.modules.values}}
-
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v2
