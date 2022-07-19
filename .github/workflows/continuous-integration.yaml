@@ -35,8 +35,30 @@ jobs:
         mvn -q clean install -Pquick -Dskip.jar-with-dependencies=true -Dshaded.jar.phase=true
         mvn -q javadoc:javadoc -Pquick
 
+  job1:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    outputs:
+      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+      output: ${{ steps.both.outputs.test }}
+
+
+    steps:
+      - id: both
+        if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+        run: echo "::set-output name=test::{{ matrix.os }}"
+      - id: one
+        if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
+        run: echo "::set-output name=test::ubuntu-latest"
+
+
+
   build:
-    runs-on: ${{ env.OS }}
+    needs: job1
+    runs-on: ${{ needs.job1.outputs.output }}
     strategy:
       fail-fast: true
       matrix:
@@ -69,12 +91,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-  
-    - name: Set OS
-        - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-          run: echo "OS=${{ matrix.os }}" >> $GITHUB_ENV
-        - if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
-          run: echo "OS=ubuntu-latest" >> $GITHUB_ENV
+#    - name: Set OS
+#        - if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+#          run: echo "OS=${{ matrix.os }}" >> $GITHUB_ENV
+#        - if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
+#          run: echo "OS=ubuntu-latest" >> $GITHUB_ENV
 
     - name: Setup JDK
       uses: actions/setup-java@v2
