@@ -35,30 +35,42 @@ jobs:
         mvn -q clean install -Pquick -Dskip.jar-with-dependencies=true -Dshaded.jar.phase=true
         mvn -q javadoc:javadoc -Pquick
 
-  job1:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
+  build-windows:
+    if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
+    runs-on: windows-latest
+    name: 'test on windows'
+    env:
+      MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
-#    outputs:
-#      if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-#      output: ${{ steps.both.outputs.test }}
-#
-#
-#    steps:
-#      - id: both
-#        if: contains( github.head_ref, 'test') || contains( github.head_ref, 'windows')
-#        run: echo "::set-output name=test::{{ matrix.os }}"
-#      - id: one
-#        if: !contains( github.head_ref, 'test') || !contains( github.head_ref, 'windows')
-#        run: echo "::set-output name=test::ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/uk
+            key: ${{matrix.modules.name}}-gaffer-dependencies
+
+      - name: Install
+        run: mvn -B -q clean install -P quick -pl ${{matrix.modules.values}} -am
+
+      - name: Test
+        run: mvn -B -q verify -P coverage -pl ${{matrix.modules.values}}
 
 
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v2
 
   build:
-    needs: job1
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
