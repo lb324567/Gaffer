@@ -70,10 +70,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Reginald
-      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
-
-    - name: BN
-      run: echo 'The branch name is' $BRANCH_NAME
+      run: echo 'The branch name is' env.BRANCH_NAME
 
     - name: Setup JDK
       uses: actions/setup-java@v2
