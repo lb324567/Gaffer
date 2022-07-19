@@ -62,7 +62,7 @@ jobs:
           - name: Caches
             values: :cache-library,:sketches-library,:bitmap-library,:hazelcast-cache-service,:jcs-cache-service
 
-    if: ${{ contains( GITHUB_REF , 'test') }}
+    if: ${{ contains( 'Hello world', 'llo') }}
 
     runs-on: ${{ matrix.os }}
 
