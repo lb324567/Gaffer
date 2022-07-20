@@ -39,7 +39,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ (contains( github.head_ref, 'bob')) && 'ubuntu-latest' || matrix.os }}
+    runs-on: ${{ (contains( github.head_ref, 'test')) && 'ubuntu-latest' || matrix.os }}
     strategy:
       fail-fast: true
       matrix:
