@@ -69,9 +69,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: check-json
-      run: echo "BRANCH_NAME=$( ${{fromJson({'windows-latest', 'ubuntu-latest'}) }} )" >> $GITHUB_ENV
-
     - name: Setup JDK
       uses: actions/setup-java@v2
       with:
