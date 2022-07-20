@@ -95,7 +95,7 @@ jobs:
 
 
   build:
-    runs-on: ${{ contains( github.head_ref, 'bob') && matrix.os || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'test') && matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
