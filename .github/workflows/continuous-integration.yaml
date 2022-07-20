@@ -39,7 +39,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ (contains( github.head_ref, fromJson('["windows", "test"]') && matrix.os || 'ubuntu-latest' }}
+    runs-on: ${{ (contains( github.head_ref, fromJSON('["windows", "test"]') && matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
