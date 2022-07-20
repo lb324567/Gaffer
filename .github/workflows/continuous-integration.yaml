@@ -70,7 +70,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: reginold
-      run: echo "BRANCH_NAME=$(fromJSON({'windows-latest', 'ubuntu-latest'}))" >> $GITHUB_ENV
+      run: echo "BRANCH_NAME=$( ${{fromJson({'windows-latest', 'ubuntu-latest'}) }} )" >> $GITHUB_ENV
 
     - name: Setup JDK
       uses: actions/setup-java@v2
