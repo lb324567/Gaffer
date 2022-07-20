@@ -95,10 +95,11 @@ jobs:
 
 
   build:
-    runs-on: ${{ contains( github.head_ref, 'bob') && 'windows-latest'|| 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'bob') && matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
+        os: [ubuntu-latest, windows-latest]
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
