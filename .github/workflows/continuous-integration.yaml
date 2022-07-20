@@ -52,11 +52,12 @@ jobs:
 #          fi
 
   build:
-#    needs: [get-os]
-    runs-on: ${{ !contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'test') && ${{ matrix.os }} || 'ubuntu-latest' }}
+#    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
       fail-fast: true
       matrix:
+        os: [windows-latest, ubuntu-latest]
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
