@@ -53,7 +53,7 @@ jobs:
 
   build:
 #    needs: [get-os]
-    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
+    runs-on: ${{ !contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
