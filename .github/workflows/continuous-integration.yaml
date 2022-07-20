@@ -38,22 +38,22 @@ jobs:
         mvn -q clean install -Pquick -Dskip.jar-with-dependencies=true -Dshaded.jar.phase=true
         mvn -q javadoc:javadoc -Pquick
 
-  get-os:
-    runs-on: ubuntu-latest
-    outputs:
-      run-windows: ${{ steps.check-branch.outputs.bool }}
-    steps:
-      - id: check-branch
-        run: |
-          if [[ ${{github.head_ref}} == *"test"* ]]; then
-            echo '::set-output name=bool::true'
-          else
-            echo '::set-output name=bool::false'
+#  get-os:
+#    runs-on: ubuntu-latest
+#    outputs:
+#      run-windows: ${{ steps.check-branch.outputs.bool }}
+#    steps:
+#      - id: check-branch
+#        run: |
+#          if [[ ${{github.head_ref}} == *"test"* ]]; then
+#            echo '::set-output name=bool::true'
+#          else
+#            echo '::set-output name=bool::false'
           fi
 
   build:
-    needs: [get-os]
-    runs-on: ${{ needs.get-os.outputs.run-windows && ['ubuntu-latest', 'windows-latest'] || 'ubuntu-latest' }}
+#    needs: [get-os]
+    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
