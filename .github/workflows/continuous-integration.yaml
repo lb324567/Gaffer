@@ -95,7 +95,7 @@ jobs:
 
 
   build:
-    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'bob') && fromJSON('[ "windows-latest", "ubuntu-latest"]')) || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
