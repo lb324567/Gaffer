@@ -40,7 +40,6 @@ jobs:
 
   build:
     runs-on: ${{ (contains( github.head_ref, 'windows') || contains( github.head_ref, 'bob')) && matrix.os || 'ubuntu-latest' }}
-#    runs-on: ${{ (contains( github.head_ref, fromJSON('["windows", "test"]') && matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
