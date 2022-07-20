@@ -39,7 +39,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON({'windows-latest', 'ubuntu-latest'}) || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
       fail-fast: true
@@ -68,6 +68,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: reginold
+      run: echo "BRANCH_NAME=$(fromJSON({'windows-latest', 'ubuntu-latest'}))" >> $GITHUB_ENV
 
     - name: Setup JDK
       uses: actions/setup-java@v2
