@@ -45,9 +45,8 @@ jobs:
         run: echo ${{ fromJSON('["windows-latest","ubuntu-latest"]')[0] }}
 
   build:
-    runs-on: ubuntu-latest
-#    ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
-#    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest","ubuntu-latest"]') || 'ubuntu-latest' }}
+#    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('[windows-latest,ubuntu-latest]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
       fail-fast: true
