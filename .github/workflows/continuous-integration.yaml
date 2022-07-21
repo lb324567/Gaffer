@@ -38,8 +38,14 @@ jobs:
         mvn -q clean install -Pquick -Dskip.jar-with-dependencies=true -Dshaded.jar.phase=true
         mvn -q javadoc:javadoc -Pquick
 
+  reginald:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check regex
+        run: echo ${{ fromJSON('["windows-latest","ubuntu-latest"]') }}
+
   build:
-    runs-on: ${{ contains( github.head_ref, 'bob') && fromJSON('[windows-latest,ubuntu-latest]') || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest","ubuntu-latest"]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
       fail-fast: true
