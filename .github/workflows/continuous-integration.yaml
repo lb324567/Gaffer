@@ -12,7 +12,7 @@ on:
 
 env:
   MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
-  OS_OPTS: 'windows-latest'
+
 
 jobs:
 
@@ -40,6 +40,9 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
+    env:
+      OS_OPTS: 'windows-latest'
+
     runs-on: ${{ contains( github.head_ref, 'test') && $OS_OPTS || 'ubuntu-latest' }}
 
 #    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest, ubuntu-latest"]') || 'ubuntu-latest' }}
