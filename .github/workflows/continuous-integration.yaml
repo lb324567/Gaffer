@@ -14,7 +14,6 @@ env:
   MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
 
 jobs:
-
   check-all-modules-are-tested:
     runs-on: ubuntu-latest
     steps:
@@ -39,15 +38,13 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    env:
     runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
-
 #    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest, ubuntu-latest"]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
       fail-fast: true
       matrix:
-        THING: [ubuntu-latest, windows-latest]
+        THING: [ ubuntu-latest, windows-latest ]
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
