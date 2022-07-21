@@ -38,13 +38,14 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ contains( github.head_ref, 'bob') && 'ubuntu-latest' || $ {{ fromJSON('["ubuntu-latest", "windows-latest"]') }} }}
+    runs-on: ubuntu-latest
+#    runs-on: ${{ fromJSON(contains( github.head_ref, 'bob') && 'ubuntu-latest' || '["ubuntu-latest", "windows-latest"]') }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest, ubuntu-latest"]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
       fail-fast: true
       matrix:
-#        os: ${{ fromJSON(github.ref == 'refs/heads/main' && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]') }}
+        os: ${{ fromJSON(contains( github.head_ref, 'bob') && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]') }}
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
