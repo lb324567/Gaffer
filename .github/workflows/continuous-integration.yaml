@@ -51,7 +51,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os:
+          - ubuntu-latest
+          - if: contains( github.head_ref, 'test')
+          - windows-latest
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
