@@ -38,7 +38,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ fromJSON(contains( github.head_ref, 'bob') && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]') }}
+    runs-on: ${{ contains(fromJSON( github.head_ref) && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]'), 'bob' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest, ubuntu-latest"]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
