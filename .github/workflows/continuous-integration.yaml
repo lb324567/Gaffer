@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: ${{ fromJSON(contains( github.head_ref, 'bob') && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]') }}
+        os: ${{ fromJSON(contains( github.head_ref, 'test') && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]') }}
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
