@@ -38,12 +38,6 @@ jobs:
         mvn -q clean install -Pquick -Dskip.jar-with-dependencies=true -Dshaded.jar.phase=true
         mvn -q javadoc:javadoc -Pquick
 
-  reginald:
-    runs-on: ubuntu-latest
-    steps:
-      - name: check regex
-        run: echo ${{ fromJSON('[windows-latest,ubuntu-latest]')[0] }}
-
   build:
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }}
     runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest,ubuntu-latest"]') || 'ubuntu-latest' }}
@@ -51,7 +45,6 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
         modules:
           - name: Core
             values: :gaffer2,:core,:access,:cache,:common-util,:data,:exception,:graph,:operation,:serialisation,:store,:type
