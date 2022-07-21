@@ -9,6 +9,12 @@ on:
       - 'release/**'
       - 'hotfix/**'
       - 'alpha-release/**'
+  workflow_call:
+    inputs:
+      runs-on:
+        type: string
+        required: false
+        default: '["ubuntu-latest", "windows-latest"]'
 
 env:
   MAVEN_OPTS: -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
@@ -38,7 +44,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ contains(fromJSON( github.head_ref) && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]'), 'bob' }}
+    runs-on: ${{ fromJSON(contains( github.head_ref, 'bob') && '["ubuntu-latest"]' || fromJSON(inputs.runs-on)) }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest, ubuntu-latest"]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
     strategy:
