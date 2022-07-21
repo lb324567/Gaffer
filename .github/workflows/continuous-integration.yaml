@@ -53,7 +53,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - if: contains( github.head_ref, 'test')
+          if: contains( github.head_ref, 'test')
           - windows-latest
         modules:
           - name: Core
