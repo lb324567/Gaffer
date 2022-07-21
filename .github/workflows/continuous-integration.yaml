@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: check regex
-        run: echo ${{ fromJSON('["windows-latest","ubuntu-latest"]') }}
+        run: echo ${{ fromJSON('["windows-latest","ubuntu-latest"]')[0] }}
 
   build:
     runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest","ubuntu-latest"]') || 'ubuntu-latest' }}
