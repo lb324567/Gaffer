@@ -40,7 +40,7 @@ jobs:
         mvn -q javadoc:javadoc -Pquick
 
   build:
-    runs-on: ${{ contains( github.head_ref, 'test') && env.OS_OPTS || 'ubuntu-latest' }}
+    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON(env.OS_OPTS) || 'ubuntu-latest' }}
 
 #    runs-on: ${{ contains( github.head_ref, 'test') && fromJSON('["windows-latest, ubuntu-latest"]') || 'ubuntu-latest' }}
 #    runs-on: ${{ contains( github.head_ref, 'test') && 'windows-latest' || 'ubuntu-latest' }} THIS WORKS
