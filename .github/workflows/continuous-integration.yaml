@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: ${{ fromJSON( (contains( github.head_ref, 'test') || contains( github.head_ref, 'alpha'))  && '["ubuntu-latest", "windows-latest"]' || '["ubuntu-latest"]' ) }}
+        os: ${{ fromJSON( (contains( github.head_ref, 'bob') || contains( github.head_ref, 'alpha'))  && '["ubuntu-latest", "windows-latest"]' || '["ubuntu-latest"]' ) }}
 #        os: ${{ fromJSON(contains( github.head_ref, 'test') && '["ubuntu-latest", "windows-latest"]' || '["ubuntu-latest"]' ) }} THIS WORKS
         modules:
           - name: Core
